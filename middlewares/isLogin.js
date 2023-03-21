@@ -1,7 +1,7 @@
 const verifyToken = require("../utils/verifyToken");
 
 const isLogin = async (req, res, next) => {
-  //step-1 : get token from header
+
   const headerObj = req.headers;
   const token = headerObj.authorization.split(" ")[1];
   //   console.log(token);
