@@ -32,7 +32,6 @@ exports.registerUserCtrl = AsyncHandler(async (req, res) => {
   });
 });
 
-
 // USER LOGIN ON SERVER
 exports.loginUserCtrl = AsyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -41,26 +40,24 @@ exports.loginUserCtrl = AsyncHandler(async (req, res) => {
     return res.status(400).json({ Error: "Please enter email & password" });
   }
 
-  User.findOne({ email }).then(async (user) => {
-    if (!user) {
-      return res.status(400).json({ message: "User does not exist" });
-    }
+  const user = await User.findOne({ email });
 
-    if (user && (await user.verifyPassword(password))) {
-      const token = generateToken(user._id);
+  if (!user) {
+    return res.status(400).json({ message: "User does not exist" });
+  }
 
-      if (token) {
-        const verify = verifyToken(token);
-        console.log(verify);
-      }
+  if (user && (await user.verifyPassword(password))) {
+    const token = generateToken(user._id);
 
-      return res.json({ data: generateToken(user._id), user });
-    } else {
-      return res.json({ message: "Invalid login credentials" });
-    }
-  });
+    user.tokens.push({ token });
+
+    await user.save();
+
+    return res.json({ data: token, user });
+  } else {
+    return res.json({ message: "Invalid login credentials" });
+  }
 });
-
 
 // FORGET PASSWORD
 exports.forgetUserCtrl = AsyncHandler(async (req, res) => {
@@ -94,4 +91,14 @@ exports.forgetUserCtrl = AsyncHandler(async (req, res) => {
       }
     });
   });
+});
+
+exports.logoutUserCtrl = AsyncHandler(async (req, res) => {
+  const user = await User.findByIdAndUpdate(
+    req.userId,
+    { $pull: { tokens: { token: req.userToken } } },
+    { new: true }
+  );
+
+  res.status(200).json({ message: "User logged out successfully" });
 });

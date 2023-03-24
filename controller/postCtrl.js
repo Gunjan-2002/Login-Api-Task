@@ -17,13 +17,13 @@ exports.createPostCtrl = AsyncHandler(async (req, res) => {
 
 // GET ALL POSTS
 exports.getAllPostCtrl = AsyncHandler(async (req, res) => {
-  const posts = await Post.find().populate("creator");
+  const posts = await Post.find().populate("creator","username").populate("likes","username").populate("comments.creator","username");
   res.status(200).json({ posts });
 });
 
 // GET SPECIFIC POST BY IT'S ID
 exports.getPostByIdCtrl = AsyncHandler(async (req, res) => {
-  const post = await Post.findById(req.params.id).populate("creator");
+  const post = await Post.findById(req.params.id).populate("creator","username").populate("likes","username").populate("comments.creator","username");
   if (!post) {
     return res.status(404).json({ message: "Post not found" });
   }
@@ -155,3 +155,7 @@ exports.countCommentsOnPostCtrl = AsyncHandler(async (req, res) => {
     noOfComments,
   });
 });
+
+
+// 641a1027a5509ab3dcd18504
+// 641a1027a5509ab3dcd18504

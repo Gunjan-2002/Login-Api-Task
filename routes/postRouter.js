@@ -34,7 +34,11 @@ postRouter.delete("/unlikepost/:id", isLogin, unlikePostByIdCtrl);
 
 postRouter.post("/commentpost/:id", isLogin, commentPostByIdCtrl);
 
-postRouter.delete("/deletecomment/:postId/:commentId", isLogin, deleteCommentPostByIdCtrl);
+postRouter.delete(
+  "/deletecomment/:postId/:commentId",
+  isLogin,
+  deleteCommentPostByIdCtrl
+);
 
 postRouter.get("/noOfLikesOnPost/:postId", countLikesOnPostCtrl);
 
